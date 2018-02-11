@@ -8,7 +8,7 @@ import android.content.*
 import android.graphics.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class PineTreeView(ctx: Context) : View(ctx) {
+class PineTreeView(ctx: Context,var n:Int = 5) : View(ctx) {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     override fun onDraw(canvas: Canvas) {
 
@@ -23,7 +23,7 @@ class PineTreeView(ctx: Context) : View(ctx) {
         return true
     }
 
-    data class PineTree(var x: Float, var y: Float, var size: Float) {
+    data class PineTree(var i:Int, var x: Float, var y: Float, var size: Float) {
         val state = PineTreeState()
         fun draw(canvas: Canvas, paint: Paint) {
             canvas.save()
@@ -62,18 +62,42 @@ class PineTreeView(ctx: Context) : View(ctx) {
             }
         }
     }
-    data class PineTreeContainer(var n:Int, var w:Float, var h:Float) {
+    data class PineTreeContainer(var n:Int, var w:Float, var h:Float,var gap:Float = 0f) {
+        val state = PineTreeContainerState(n)
         var pineTrees:ConcurrentLinkedQueue<PineTree> = ConcurrentLinkedQueue()
+        init {
+            var w_size = 0f
+            for(i in 1..n) {
+                w_size += (1f/i)
+            }
+            gap = w/w_size
+            for(i in 1..n) {
+                pineTrees.add(PineTree(i,w/2,3*h/4-gap - gap/i,gap/i))
+            }
+        }
         fun draw(canvas:Canvas,paint:Paint) {
             pineTrees.forEach {
                 it.draw(canvas,paint)
             }
+            var y_end = 3*h/4 - gap
+            canvas.drawLine(w/2, 3*h/4, w/2, y_end , paint)
+            for(i in 1..n) {
+                canvas.drawLine(w / 2, y_end, w/2, y_end-gap/i, paint)
+                y_end -= gap/i
+            }
         }
         fun update(stopcb: (Float) -> Unit) {
-
+            state.executeCB { j ->
+                pineTrees.at(j)?.update {
+                    stopcb(it)
+                    state.incrementCounter()
+                }
+            }
         }
         fun startUpdating(startcb: () -> Unit) {
-
+            state.executeCB { j ->
+                pineTrees.at(j)?.startUpdating(startcb)
+            }
         }
     }
     data class PineTreeContainerState(var n:Int,var j:Int = 0,var dir:Int = 0) {
