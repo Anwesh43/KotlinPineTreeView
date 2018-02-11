@@ -112,6 +112,31 @@ class PineTreeView(ctx: Context,var n:Int = 5) : View(ctx) {
             cb(j)
         }
     }
+    data class Animator(var view:PineTreeView, var animated:Boolean = false) {
+        fun animate(updatecb: () -> Unit) {
+            if(animated) {
+                updatecb()
+                try {
+                    Thread.sleep(50)
+                    view.invalidate()
+                }
+                catch(ex:Exception) {
+
+                }
+            }
+        }
+        fun start() {
+            if(!animated) {
+                animated = true
+                view.postInvalidate()
+            }
+        }
+        fun stop() {
+            if(animated) {
+                animated = true
+            }
+        }
+    }
 }
 fun ConcurrentLinkedQueue<PineTreeView.PineTree>.at(i:Int):PineTreeView.PineTree? {
     var j = 0
