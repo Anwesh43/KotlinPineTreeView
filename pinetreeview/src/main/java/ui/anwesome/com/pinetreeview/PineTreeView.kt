@@ -76,6 +76,18 @@ class PineTreeView(ctx: Context) : View(ctx) {
 
         }
     }
+    data class PineTreeContainerState(var n:Int,var j:Int = 0,var dir:Int = 0) {
+        fun incrementCounter() {
+            j += dir
+            if(j == n || j == -1) {
+                dir *= -1
+                j += dir
+            }
+        }
+        fun executeCB(cb:(Int)->Unit) {
+            cb(j)
+        }
+    }
 }
 fun ConcurrentLinkedQueue<PineTreeView.PineTree>.at(i:Int):PineTreeView.PineTree? {
     var j = 0
