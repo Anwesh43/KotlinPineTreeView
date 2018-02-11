@@ -6,6 +6,7 @@ package ui.anwesome.com.pinetreeview
 import android.view.*
 import android.content.*
 import android.graphics.*
+import java.util.concurrent.ConcurrentLinkedQueue
 
 class PineTreeView(ctx: Context) : View(ctx) {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -60,4 +61,14 @@ class PineTreeView(ctx: Context) : View(ctx) {
             }
         }
     }
+}
+fun ConcurrentLinkedQueue<PineTreeView.PineTree>.at(i:Int):PineTreeView.PineTree? {
+    var j = 0
+    forEach {
+        if (j == i) {
+            return it 
+        }
+        j++
+    }
+    return null
 }
