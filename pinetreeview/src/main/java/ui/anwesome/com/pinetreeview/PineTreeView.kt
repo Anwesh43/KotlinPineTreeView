@@ -9,7 +9,7 @@ import android.content.*
 import android.graphics.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class PineTreeView(ctx: Context,var n:Int = 5) : View(ctx) {
+class PineTreeView(ctx: Context,var n:Int = 4) : View(ctx) {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val renderer = Renderer(this)
     override fun onDraw(canvas: Canvas) {
@@ -72,9 +72,11 @@ class PineTreeView(ctx: Context,var n:Int = 5) : View(ctx) {
             for(i in 1..n) {
                 w_size += (1f/i)
             }
-            gap = w/w_size
+            gap = (w/2)/w_size
+            var y_end = 3*h/4 - gap
             for(i in 1..n) {
-                pineTrees.add(PineTree(i,w/2,3*h/4-gap - gap/i,gap/i))
+                pineTrees.add(PineTree(i,w/2,y_end - gap/i,gap/i))
+                y_end -= gap/i
             }
         }
         fun draw(canvas:Canvas,paint:Paint) {
@@ -102,7 +104,7 @@ class PineTreeView(ctx: Context,var n:Int = 5) : View(ctx) {
             }
         }
     }
-    data class PineTreeContainerState(var n:Int,var j:Int = 0,var dir:Int = 0) {
+    data class PineTreeContainerState(var n:Int,var j:Int = 0,var dir:Int = 1) {
         fun incrementCounter() {
             j += dir
             if(j == n || j == -1) {
@@ -147,6 +149,9 @@ class PineTreeView(ctx: Context,var n:Int = 5) : View(ctx) {
                 val w = canvas.width.toFloat()
                 val h = canvas.height.toFloat()
                 container = PineTreeView.PineTreeContainer(view.n, w, h)
+                paint.color = Color.parseColor("#00838F")
+                paint.strokeCap = Paint.Cap.ROUND
+                paint.strokeWidth = Math.min(w,h)/35
             }
             canvas.drawColor(Color.parseColor("#212121"))
             container?.draw(canvas,paint)
