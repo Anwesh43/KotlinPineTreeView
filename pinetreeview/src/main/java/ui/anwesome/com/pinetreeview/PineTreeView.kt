@@ -24,12 +24,13 @@ class PineTreeView(ctx: Context) : View(ctx) {
     }
 
     data class PineTree(var x: Float, var y: Float, var size: Float) {
+        val state = PineTreeState()
         fun draw(canvas: Canvas, paint: Paint) {
             canvas.save()
             canvas.translate(x, y)
             for (i in 0..1) {
                 canvas.save()
-                canvas.rotate(60f * (i * 2 - 1))
+                canvas.rotate(60f * (i * 2 - 1) * state.scale)
                 canvas.drawLine(0f, 0f, 0f, size, paint)
                 canvas.restore()
             }
@@ -37,11 +38,11 @@ class PineTreeView(ctx: Context) : View(ctx) {
         }
 
         fun update(stopcb: (Float) -> Unit) {
-
+            state.update(stopcb)
         }
 
         fun startUpdating(startcb: () -> Unit) {
-
+            state.startUpdating(startcb)
         }
     }
     data class PineTreeState(var scale:Float = 0f,var dir:Float = 0f, var prevScale:Float = 0f) {
@@ -66,7 +67,7 @@ fun ConcurrentLinkedQueue<PineTreeView.PineTree>.at(i:Int):PineTreeView.PineTree
     var j = 0
     forEach {
         if (j == i) {
-            return it 
+            return it
         }
         j++
     }
