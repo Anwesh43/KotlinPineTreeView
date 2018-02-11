@@ -138,6 +138,30 @@ class PineTreeView(ctx: Context,var n:Int = 5) : View(ctx) {
         }
     }
 }
+data class Renderer(var view:PineTreeView, var time:Int = 0) {
+    var container:PineTreeView.PineTreeContainer?=null
+    val animator = PineTreeView.Animator(view)
+    fun render(canvas:Canvas,paint:Paint) {
+        if(time == 0) {
+            val w = canvas.width.toFloat()
+            val h = canvas.height.toFloat()
+            container = PineTreeView.PineTreeContainer(view.n, w, h)
+        }
+        canvas.drawColor(Color.parseColor("#212121"))
+        container?.draw(canvas,paint)
+        animator.animate {
+            container?.update {
+                animator.stop()
+            }
+        }
+        time++
+    }
+    fun handleTap() {
+        container?.startUpdating {
+            animator.start()
+        }
+    }
+}
 fun ConcurrentLinkedQueue<PineTreeView.PineTree>.at(i:Int):PineTreeView.PineTree? {
     var j = 0
     forEach {
