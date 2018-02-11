@@ -62,6 +62,20 @@ class PineTreeView(ctx: Context) : View(ctx) {
             }
         }
     }
+    data class PineTreeContainer(var n:Int, var w:Float, var h:Float) {
+        var pineTrees:ConcurrentLinkedQueue<PineTree> = ConcurrentLinkedQueue()
+        fun draw(canvas:Canvas,paint:Paint) {
+            pineTrees.forEach {
+                it.draw(canvas,paint)
+            }
+        }
+        fun update(stopcb: (Float) -> Unit) {
+
+        }
+        fun startUpdating(startcb: () -> Unit) {
+
+        }
+    }
 }
 fun ConcurrentLinkedQueue<PineTreeView.PineTree>.at(i:Int):PineTreeView.PineTree? {
     var j = 0
