@@ -92,6 +92,13 @@ class PineTreeView(ctx: Context,var n:Int = 4) : View(ctx) {
                 canvas.drawLine(w / 2, y_end, w/2, y_end-gap/i, paint)
                 y_end -= gap/i
             }
+            state.executeCB { j ->
+                val scale = pineTrees.at(j)?.state?.scale?:0f
+                val gap = 0.8f*w/n
+                canvas.drawLine(w/10,4*h/5,w/10+gap*j+gap*scale,4*h/5,paint)
+                val deg = 360/n
+                canvas.drawArc(RectF(w/2-w/15,h/10-w/15,w/2+w/15,h/10+w/15),0f,deg*j+deg*scale,true,paint)
+            }
         }
         fun update(stopcb: (Float,Int) -> Unit) {
             state.executeCB { j ->
@@ -162,7 +169,7 @@ class PineTreeView(ctx: Context,var n:Int = 4) : View(ctx) {
                 container?.update { scale,j ->
                     animator.stop()
                     when(scale) {
-                        0f -> view.pineTreeListener?.onSelectionListener?.invoke(j)
+                        1f -> view.pineTreeListener?.onSelectionListener?.invoke(j)
                     }
                 }
             }
