@@ -12,10 +12,13 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class PineTreeView(ctx: Context,var n:Int = 4) : View(ctx) {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val renderer = Renderer(this)
+    var pineTreeListener:PineTreeListener ?= null
     override fun onDraw(canvas: Canvas) {
         renderer.render(canvas,paint)
     }
-
+    fun addPineTreeListener(onSelectionListener: (Int) -> Unit) {
+        pineTreeListener = PineTreeListener(onSelectionListener)
+    }
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -90,10 +93,10 @@ class PineTreeView(ctx: Context,var n:Int = 4) : View(ctx) {
                 y_end -= gap/i
             }
         }
-        fun update(stopcb: (Float) -> Unit) {
+        fun update(stopcb: (Float,Int) -> Unit) {
             state.executeCB { j ->
                 pineTrees.at(j)?.update {
-                    stopcb(it)
+                    stopcb(it,j)
                     state.incrementCounter()
                 }
             }
@@ -156,8 +159,11 @@ class PineTreeView(ctx: Context,var n:Int = 4) : View(ctx) {
             canvas.drawColor(Color.parseColor("#212121"))
             container?.draw(canvas,paint)
             animator.animate {
-                container?.update {
+                container?.update { scale,j ->
                     animator.stop()
+                    when(scale) {
+                        0f -> view.pineTreeListener?.onSelectionListener?.invoke(j)
+                    }
                 }
             }
             time++
@@ -175,6 +181,7 @@ class PineTreeView(ctx: Context,var n:Int = 4) : View(ctx) {
             return view
         }
     }
+    data class PineTreeListener(var onSelectionListener:(Int)->Unit)
 }
 fun ConcurrentLinkedQueue<PineTreeView.PineTree>.at(i:Int):PineTreeView.PineTree? {
     var j = 0
